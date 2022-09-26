@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+
+  <name>romea_imu_localisation_plugin</name>
+  <version>0.0.0</version>
+  <description>Package romea_imu_localisation_plugin description</description>
+  <maintainer email="jean.laneurit@inrae.fr">Jean Laneurit</maintainer>
+  <license>TODO: License declaration</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>romea_core_common</depend>
+  <depend>romea_core_localisation</depend>
+  <depend>romea_core_localisation_imu</depend>
+  <depend>romea_common_utils</depend>
+  <depend>romea_localisation_msgs</depend>
+  <depend>romea_localisation_utils</depend>
+  <depend>sensor_msgs</depend>
+  <depend>nav_msgs</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_cmake_gtest</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+
+</package>
