@@ -1,9 +1,10 @@
 //romea
-#include "romea_localisation_imu/imu_parameters.hpp"
+#include "romea_localisation_imu/imu_localisation_plugin_parameters.hpp"
 #include "romea_localisation_imu/imu_localisation_plugin.hpp"
 
 #include <romea_core_common/math/EulerAngles.hpp>
 #include <romea_common_utils/params/node_parameters.hpp>
+#include <romea_common_utils/params/eigen_parameters.hpp>
 #include <romea_common_utils/conversions/time_conversions.hpp>
 #include <romea_common_utils/conversions/geometry_conversions.hpp>
 #include <romea_common_utils/qos.hpp>
@@ -12,17 +13,17 @@
 namespace romea {
 
 //-----------------------------------------------------------------------------
-ImuLocalisationPlugin::ImuLocalisationPlugin(const rclcpp::NodeOptions & options):
+IMULocalisationPlugin::IMULocalisationPlugin(const rclcpp::NodeOptions & options):
   node_(std::make_shared<rclcpp::Node>("imu_localisation_plugin", options)),
   plugin_(nullptr),
   angular_speed_observation_(),
   attitude_observation_(),
-  speed_(),
   imu_sub_(nullptr),
-  odo_sub_(nullptr),
+  odom_sub_(nullptr),
   attitude_pub_(nullptr),
   angular_speed_pub_(nullptr),
   diagnostic_pub_(nullptr),
+  timer_(nullptr),
   restamping_(false)
 {
   declare_parameters_();
@@ -37,13 +38,13 @@ ImuLocalisationPlugin::ImuLocalisationPlugin(const rclcpp::NodeOptions & options
 
 //-----------------------------------------------------------------------------
 rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
-ImuLocalisationPlugin::get_node_base_interface() const
+IMULocalisationPlugin::get_node_base_interface() const
 {
   return node_->get_node_base_interface();
 }
 
 //-----------------------------------------------------------------------------
-void ImuLocalisationPlugin::declare_parameters_()
+void IMULocalisationPlugin::declare_parameters_()
 {
   declare_imu_rate(node_);
   declare_imu_acceleration_noise_density(node_);
@@ -56,45 +57,49 @@ void ImuLocalisationPlugin::declare_parameters_()
   declare_imu_magnetic_bias_stability_std(node_);
   declare_imu_magnetic_range(node_);
   declare_imu_heading_std(node_);
-  declare_parameter_with_default<bool>(node_,"restamping",false);
-  declare_parameter_with_default<bool>(node_,"debug",false);
+  declare_imu_body_pose(node_);
+
+  declare_enable_accelerations(node_);
+  declare_restamping(node_);
+  declare_debug(node_);
+
 }
 
 //-----------------------------------------------------------------------------
-void ImuLocalisationPlugin::init_angular_speed_publisher_()
+void IMULocalisationPlugin::init_angular_speed_publisher_()
 {
   node_->create_publisher<ObservationAngularSpeedStampedMsg>("angular_speed",sensor_data_qos());
 }
 
 //-----------------------------------------------------------------------------
-void ImuLocalisationPlugin::init_attitude_publisher_()
+void IMULocalisationPlugin::init_attitude_publisher_()
 {
   node_->create_publisher<ObservationAttitudeStampedMsg>("attitude",sensor_data_qos());
 }
 
 //-----------------------------------------------------------------------------
-void ImuLocalisationPlugin::init_diagnostic_publisher_()
+void IMULocalisationPlugin::init_diagnostic_publisher_()
 {
   diagnostic_pub_ = std::make_unique<DiagnosticPublisher<DiagnosticReport>>(node_,node_->get_name(),1.0);
 }
 
 //-----------------------------------------------------------------------------
-void ImuLocalisationPlugin::init_imu_subcriber_()
+void IMULocalisationPlugin::init_imu_subcriber_()
 {
-  auto callback = std::bind(&ImuLocalisationPlugin::process_imu_, this, std::placeholders::_1);
-  node_->create_subscription<ImuMsg>("imu/data",best_effort(1),callback);
+  auto callback = std::bind(&IMULocalisationPlugin::process_imu_, this, std::placeholders::_1);
+  imu_sub_=node_->create_subscription<ImuMsg>("imu/data",best_effort(1),callback);
 }
 
 //-----------------------------------------------------------------------------
-void ImuLocalisationPlugin::init_odometry_subscriber_()
+void IMULocalisationPlugin::init_odometry_subscriber_()
 {
-  auto callback = std::bind(&ImuLocalisationPlugin::process_odom_, this, std::placeholders::_1);
-  node_->create_subscription<OdometryMsg>("vehicle_controller/odom",best_effort(1),callback);
+  auto callback = std::bind(&IMULocalisationPlugin::process_odom_, this, std::placeholders::_1);
+  odom_sub_=node_->create_subscription<OdometryMsg>("vehicle_controller/odom",best_effort(1),callback);
 }
 
 
 //-----------------------------------------------------------------------------
-void ImuLocalisationPlugin::init_plugin_()
+void IMULocalisationPlugin::init_plugin_()
 {
   auto imu = std::make_unique<IMUAHRS>(get_imu_rate(node_),
                                        get_imu_acceleration_noise_density(node_),
@@ -108,14 +113,17 @@ void ImuLocalisationPlugin::init_plugin_()
                                        get_imu_magnetic_range(node_),
                                        get_imu_heading_std(node_));
 
+  imu->setBodyPose(get_imu_body_pose(node_));
+
   plugin_ = std::make_unique<LocalisationIMUPlugin>(std::move(imu));
-  restamping_ = get_parameter<bool>(node_,"restamping");
+  enable_accelerations_ = get_enable_accelerations(node_);
+  restamping_ = get_restamping(node_);
 }
 
 //-----------------------------------------------------------------------------
-void ImuLocalisationPlugin::init_debug_()
+void IMULocalisationPlugin::init_debug_()
 {
-  if(get_parameter<bool>(node_,"debug"))
+  if(get_debug(node_))
   {
     std::string filename = std::string(node_->get_fully_qualified_name())+"/debug.dat";
     std::replace_copy(std::begin(filename)+1, std::end(filename), std::begin(filename)+1, '/', '-');
@@ -124,18 +132,28 @@ void ImuLocalisationPlugin::init_debug_()
 }
 
 //-----------------------------------------------------------------------------
-void ImuLocalisationPlugin::process_odom_(OdometryMsg::ConstSharedPtr msg)
+void IMULocalisationPlugin::init_timer_()
+{
+  auto callback = std::bind(&IMULocalisationPlugin::timer_callback_,this);
+  timer_ = node_->create_wall_timer(std::chrono::milliseconds(100),callback);
+}
+
+//-----------------------------------------------------------------------------
+void IMULocalisationPlugin::process_odom_(OdometryMsg::ConstSharedPtr msg)
 {
   //std::cout << "processOdom" << std::endl;
-  speed_.store(std::sqrt(msg->twist.twist.linear.x*
-                         msg->twist.twist.linear.x+
-                         msg->twist.twist.linear.y*
-                         msg->twist.twist.linear.y));
+  auto stamp = restamping_ ? node_->get_clock()->now() : rclcpp::Time(msg->header.stamp.sec, msg->header.stamp.nanosec);
+
+  plugin_->processLinearSpeed(to_romea_duration(stamp),
+                              std::sqrt(msg->twist.twist.linear.x*
+                                        msg->twist.twist.linear.x+
+                                        msg->twist.twist.linear.y*
+                                        msg->twist.twist.linear.y));
 }
 
 
 //-----------------------------------------------------------------------------
-void ImuLocalisationPlugin::process_imu_(ImuMsg::ConstSharedPtr msg)
+void IMULocalisationPlugin::process_imu_(ImuMsg::ConstSharedPtr msg)
 {
   //  std::cout << " processIMU" << std::endl;
 
@@ -143,19 +161,17 @@ void ImuLocalisationPlugin::process_imu_(ImuMsg::ConstSharedPtr msg)
 
   process_attitude_(stamp,*msg);
   process_angular_speed_(stamp,*msg);
-  diagnostic_pub_->publish(stamp,plugin_->makeDiagnosticReport());
 }
 
 
 //-----------------------------------------------------------------------------
-void ImuLocalisationPlugin::process_angular_speed_(const rclcpp::Time &stamp,
+void IMULocalisationPlugin::process_angular_speed_(const rclcpp::Time &stamp,
                                                    const ImuMsg & msg)
 {
   if(plugin_->computeAngularSpeed(to_romea_duration(stamp),
-                                  speed_,
-                                  msg.linear_acceleration.x,
-                                  msg.linear_acceleration.y,
-                                  msg.linear_acceleration.z,
+                                  enable_accelerations_*msg.linear_acceleration.x,
+                                  enable_accelerations_*msg.linear_acceleration.y,
+                                  enable_accelerations_*msg.linear_acceleration.z,
                                   msg.angular_velocity.x,
                                   msg.angular_velocity.y,
                                   msg.angular_velocity.z,
@@ -167,7 +183,7 @@ void ImuLocalisationPlugin::process_angular_speed_(const rclcpp::Time &stamp,
 }
 
 //-----------------------------------------------------------------------------
-void ImuLocalisationPlugin::process_attitude_(const rclcpp::Time & stamp,
+void IMULocalisationPlugin::process_attitude_(const rclcpp::Time & stamp,
                                               const ImuMsg & msg)
 {
 
@@ -187,27 +203,33 @@ void ImuLocalisationPlugin::process_attitude_(const rclcpp::Time & stamp,
 }
 
 //-----------------------------------------------------------------------------
-void ImuLocalisationPlugin::publish_angular_speed_(const rclcpp::Time & stamp,
+void IMULocalisationPlugin::publish_angular_speed_(const rclcpp::Time & stamp,
                                                    const std::string & frame_id)
 {
-  using namespace romea_localisation_msgs::msg;
-  auto angular_speed_msg = std::make_unique<ObservationAngularSpeedStamped>();
+  auto angular_speed_msg = std::make_unique<ObservationAngularSpeedStampedMsg>();
   to_ros_msg(stamp,frame_id,angular_speed_observation_,*angular_speed_msg);
   angular_speed_pub_->publish(std::move(angular_speed_msg));
 }
 
 //-----------------------------------------------------------------------------
-void ImuLocalisationPlugin::publish_attitude_(const rclcpp::Time & stamp,
+void IMULocalisationPlugin::publish_attitude_(const rclcpp::Time & stamp,
                                               const std::string & frame_id)
 {
-  using namespace romea_localisation_msgs::msg;
-  auto attitude_msg = std::make_unique<ObservationAttitudeStamped>();
+  auto attitude_msg = std::make_unique<ObservationAttitudeStampedMsg>();
   to_ros_msg(stamp,frame_id,attitude_observation_,*attitude_msg);
   attitude_pub_->publish(std::move(attitude_msg));
 }
 
+//-----------------------------------------------------------------------------
+void IMULocalisationPlugin::timer_callback_()
+{
+  auto stamp = node_->get_clock()->now();
+  diagnostic_pub_->publish(stamp,plugin_->makeDiagnosticReport(to_romea_duration(stamp)));
 }
 
+
+}
+//-----------------------------------------------------------------------------
 #include <rclcpp_components/register_node_macro.hpp>
-RCLCPP_COMPONENTS_REGISTER_NODE(romea::ImuLocalisationPlugin)
+RCLCPP_COMPONENTS_REGISTER_NODE(romea::IMULocalisationPlugin)
 

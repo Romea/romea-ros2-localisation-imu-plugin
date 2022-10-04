@@ -17,7 +17,7 @@
 namespace romea {
 
 
-class ImuLocalisationPlugin
+class IMULocalisationPlugin
 {
 public :
 
@@ -29,10 +29,10 @@ public :
 public :
 
   ROMEA_LOCALISATION_IMU_PUBLIC
-  ImuLocalisationPlugin(const rclcpp::NodeOptions & options);
+  IMULocalisationPlugin(const rclcpp::NodeOptions & options);
 
   ROMEA_LOCALISATION_IMU_PUBLIC
-  virtual ~ImuLocalisationPlugin()=default;
+  virtual ~IMULocalisationPlugin()=default;
 
   ROMEA_LOCALISATION_IMU_PUBLIC
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
@@ -41,18 +41,6 @@ public :
 protected:
 
   void declare_parameters_();
-
-  void process_imu_(ImuMsg::ConstSharedPtr  msg);
-
-  void process_odom_(OdometryMsg::ConstSharedPtr msg);
-
-  void process_angular_speed_(const rclcpp::Time & stamp,const ImuMsg & msg);
-
-  void process_attitude_(const rclcpp::Time & stamp,const ImuMsg & msg);
-
-  void publish_angular_speed_(const rclcpp::Time & stamp,const std::string & frame_id);
-
-  void publish_attitude_(const rclcpp::Time & stamp,const std::string & frame_id);
 
   void init_attitude_publisher_();
 
@@ -68,26 +56,40 @@ protected:
 
   void init_debug_();
 
+  void init_timer_();
+
+
+  void process_imu_(ImuMsg::ConstSharedPtr  msg);
+
+  void process_odom_(OdometryMsg::ConstSharedPtr msg);
+
+  void process_angular_speed_(const rclcpp::Time & stamp,const ImuMsg & msg);
+
+  void process_attitude_(const rclcpp::Time & stamp,const ImuMsg & msg);
+
+  void publish_angular_speed_(const rclcpp::Time & stamp,const std::string & frame_id);
+
+  void publish_attitude_(const rclcpp::Time & stamp,const std::string & frame_id);
+
+  void timer_callback_();
+
+
 protected:
 
   rclcpp::Node::SharedPtr node_;
   std::unique_ptr<LocalisationIMUPlugin> plugin_;
   ObservationAngularSpeed angular_speed_observation_;
   ObservationAttitude attitude_observation_;
-  std::atomic<double> speed_;
 
   rclcpp::Subscription<ImuMsg>::SharedPtr imu_sub_;
-  rclcpp::Subscription<OdometryMsg>::SharedPtr odo_sub_;
+  rclcpp::Subscription<OdometryMsg>::SharedPtr odom_sub_;
   rclcpp::Publisher<ObservationAttitudeStampedMsg>::SharedPtr attitude_pub_;
   rclcpp::Publisher<ObservationAngularSpeedStampedMsg>::SharedPtr angular_speed_pub_;
   std::unique_ptr<DiagnosticPublisher<DiagnosticReport>> diagnostic_pub_;
+  rclcpp::TimerBase::SharedPtr timer_;
 
   bool restamping_;
-
-
-//  IMUDiagnostic diagnostics_;
-
-//  SimpleFileLogger debugLogger_;
+  bool enable_accelerations_;
 };
 
 }

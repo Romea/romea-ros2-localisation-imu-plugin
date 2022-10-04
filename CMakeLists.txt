@@ -31,7 +31,7 @@ find_package(nav_msgs REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
  src/imu_localisation_plugin.cpp
- src/imu_parameters.cpp)
+ src/imu_localisation_plugin_parameters.cpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -62,7 +62,6 @@ install(TARGETS
  LIBRARY DESTINATION lib
  RUNTIME DESTINATION bin)
 
-
 add_executable(${PROJECT_NAME}_node src/imu_localisation_plugin_node.cpp)
 target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME})
 ament_target_dependencies(${PROJECT_NAME} rclcpp)
@@ -70,7 +69,6 @@ ament_target_dependencies(${PROJECT_NAME} rclcpp)
 install(TARGETS
  ${PROJECT_NAME}_node
  DESTINATION lib/${PROJECT_NAME})
-
 
 #ament_export_dependencies(eigen3_cmake_module)
 #ament_export_dependencies(Eigen3)
@@ -117,70 +115,3 @@ install(TARGETS
 #endif()
 
 ament_package()
-
-
-#cmake_minimum_required(VERSION 3.0.2)
-#project(romea_localisation_imu_plugin)
-
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
-#set(CMAKE_CXX_STANDARD 17)
-#set(CMAKE_CXX_STANDARD_REQUIRED ON)
-#set(CMAKE_CXX_EXTENSIONS OFF)
-
-########################
-### Find dependencies ##
-########################
-#set(${PROJECT_NAME}_CATKIN_DEPS
-#    roscpp
-#    roslib
-#    nodelet
-#    romea_common_utils
-#    romea_localisation_utils)
-
-#find_package(catkin REQUIRED COMPONENTS ${${PROJECT_NAME}_CATKIN_DEPS})
-#find_package(romea_core_common REQUIRED)
-#find_package(romea_core_imu REQUIRED)
-#find_package(romea_core_localisation REQUIRED)
-#find_package(romea_core_localisation_imu REQUIRED)
-
-#find_package( PkgConfig )
-#pkg_check_modules( EIGEN3 REQUIRED eigen3 )
-
-####################################
-### catkin specific configuration ##
-####################################
-#catkin_package(
-#  LIBRARIES ${PROJECT_NAME}
-#  CATKIN_DEPENDS ${${PROJECT_NAME}_CATKIN_DEPS})
-
-#include_directories(include
-# ${catkin_INCLUDE_DIRS}
-# ${EIGEN3_INCLUDE_DIRS}
-# ${romea_core_common_INCLUDE_DIRS}
-# ${romea_core_imu_INCLUDE_DIRS}
-# ${romea_core_localisation_INCLUDE_DIRS}
-# ${romea_core_localisation_imu_INCLUDE_DIRS}
-#)
-
-#set(romea_LIBRARIES
-# ${romea_core_common_LIBRARIES}
-# ${romea_core_imu_LIBRARIES}
-# ${romea_core_localisation_LIBRARIES}
-# ${romea_core_localisation_imu_LIBRARIES}
-#)
-
-#add_library(imu_localisation_plugin_nodelet
-#  src/imu_localisation_plugin_nodelet.cpp
-#  src/ImuFactory.cpp)
-
-#add_executable(imu_localisation_plugin_node
-#  src/imu_localisation_plugin_node.cpp)
-
-#target_link_libraries(imu_localisation_plugin_nodelet
-#  ${catkin_LIBRARIES}
-#  ${romea_LIBRARIES}
-#  )
-
-#target_link_libraries(imu_localisation_plugin_node
-#  ${catkin_LIBRARIES})
-
