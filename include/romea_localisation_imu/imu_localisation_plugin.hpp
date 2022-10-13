@@ -85,7 +85,7 @@ protected:
   rclcpp::Subscription<OdometryMsg>::SharedPtr odom_sub_;
   rclcpp::Publisher<ObservationAttitudeStampedMsg>::SharedPtr attitude_pub_;
   rclcpp::Publisher<ObservationAngularSpeedStampedMsg>::SharedPtr angular_speed_pub_;
-  std::unique_ptr<DiagnosticPublisher<DiagnosticReport>> diagnostic_pub_;
+  std::shared_ptr<StampedPublisherBase<DiagnosticReport>> diagnostic_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 
   bool restamping_;
