@@ -6,11 +6,9 @@
 
 namespace romea {
 
-void declare_debug(rclcpp::Node::SharedPtr node);
 void declare_restamping(rclcpp::Node::SharedPtr node);
 void declare_enable_accelerations(rclcpp::Node::SharedPtr node);
 
-bool get_debug(rclcpp::Node::SharedPtr node);
 bool get_restamping(rclcpp::Node::SharedPtr node);
 bool get_enable_accelerations(rclcpp::Node::SharedPtr node);
 

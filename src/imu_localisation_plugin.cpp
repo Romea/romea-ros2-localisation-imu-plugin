@@ -5,6 +5,7 @@
 #include <romea_core_common/math/EulerAngles.hpp>
 #include <romea_common_utils/params/node_parameters.hpp>
 #include <romea_common_utils/params/eigen_parameters.hpp>
+#include <romea_common_utils/params/algorithm_parameters.hpp>
 #include <romea_common_utils/conversions/time_conversions.hpp>
 #include <romea_common_utils/conversions/geometry_conversions.hpp>
 #include <romea_common_utils/qos.hpp>
@@ -125,9 +126,7 @@ void IMULocalisationPlugin::init_debug_()
 {
   if(get_debug(node_))
   {
-    std::string filename = std::string(node_->get_fully_qualified_name())+"/debug.dat";
-    std::replace_copy(std::begin(filename)+1, std::end(filename), std::begin(filename)+1, '/', '-');
-    plugin_->enableDebugLog(rclcpp::get_logging_directory().string()+filename);
+    plugin_->enableDebugLog(get_log_filename(node_));
   }
 }
 

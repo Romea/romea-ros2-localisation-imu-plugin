@@ -52,9 +52,11 @@ ament_target_dependencies(${PROJECT_NAME}
  nav_msgs
  )
 
-rclcpp_components_register_nodes(${PROJECT_NAME}
- "romea::ImuLocalisationPlugin"
- )
+rclcpp_components_register_node(${PROJECT_NAME}
+  PLUGIN "romea::IMULocalisationPlugin"
+  EXECUTABLE imu_localisation_plugin_node
+)
+
 
 install(TARGETS
  ${PROJECT_NAME}
@@ -62,13 +64,13 @@ install(TARGETS
  LIBRARY DESTINATION lib
  RUNTIME DESTINATION bin)
 
-add_executable(${PROJECT_NAME}_node src/imu_localisation_plugin_node.cpp)
-target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME})
-ament_target_dependencies(${PROJECT_NAME} rclcpp)
+#add_executable(${PROJECT_NAME}_node src/imu_localisation_plugin_node.cpp)
+#target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME})
+#ament_target_dependencies(${PROJECT_NAME} rclcpp)
 
-install(TARGETS
- ${PROJECT_NAME}_node
- DESTINATION lib/${PROJECT_NAME})
+#install(TARGETS
+# ${PROJECT_NAME}_node
+# DESTINATION lib/${PROJECT_NAME})
 
 #ament_export_dependencies(eigen3_cmake_module)
 #ament_export_dependencies(Eigen3)

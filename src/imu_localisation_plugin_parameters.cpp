@@ -4,7 +4,7 @@
 #include <romea_common_utils/params/eigen_parameters.hpp>
 
 namespace{
-const std::string debug_param_name = "debug";
+
 const std::string restamping_param_name = "restamping";
 const std::string enable_accelerations_param_name = "enable_accelerations";
 
@@ -24,12 +24,6 @@ const std::string heading_std_param_name = "imu.heading_std";
 namespace romea {
 
 //-----------------------------------------------------------------------------
-void declare_debug(rclcpp::Node::SharedPtr node)
-{
-  declare_parameter_with_default<bool>(node,debug_param_name,false);
-}
-
-//-----------------------------------------------------------------------------
 void declare_restamping(rclcpp::Node::SharedPtr node)
 {
   declare_parameter_with_default<bool>(node,restamping_param_name,false);
@@ -38,13 +32,7 @@ void declare_restamping(rclcpp::Node::SharedPtr node)
 //-----------------------------------------------------------------------------
 void declare_enable_accelerations(rclcpp::Node::SharedPtr node)
 {
-  declare_parameter_with_default<bool>(node,enable_accelerations_param_name,false);
-}
-
-//----------------------------------------------------------------------------
-bool get_debug(rclcpp::Node::SharedPtr node)
-{
-  return get_parameter<bool>(node,debug_param_name);
+  declare_parameter_with_default<bool>(node,enable_accelerations_param_name,true);
 }
 
 //----------------------------------------------------------------------------
