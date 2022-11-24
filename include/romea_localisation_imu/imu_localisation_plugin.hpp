@@ -1,13 +1,17 @@
-#ifndef __ImuLocalisationPlugin_HPP__
-#define __ImuLocalisationPlugin_HPP__
+#ifndef ROMEA_LOCALISATION_IMU_IMU_LOCALISATION_PLUGIN_HPP
+#define ROMEA_LOCALISATION_IMU_IMU_LOCALISATION_PLUGIN_HPP
 
-//ros
+// std
+#include <string>
+#include <memory>
+
+// ros
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 
-//romea
-#include "visibility_control.h"
+// romea
+#include "romea_localisation_imu/visibility_control.h"
 #include <romea_core_localisation_imu/LocalisationIMUPlugin.hpp>
 #include <romea_localisation_utils/conversions/observation_angular_speed_conversions.hpp>
 #include <romea_localisation_utils/conversions/observation_attitude_conversions.hpp>
@@ -23,16 +27,18 @@ public :
 
   using ImuMsg = sensor_msgs::msg::Imu;
   using OdometryMsg = nav_msgs::msg::Odometry;
-  using ObservationAttitudeStampedMsg = romea_localisation_msgs::msg::ObservationAttitudeStamped;
-  using ObservationAngularSpeedStampedMsg = romea_localisation_msgs::msg::ObservationAngularSpeedStamped;
+  using ObservationAttitudeStampedMsg =
+    romea_localisation_msgs::msg::ObservationAttitudeStamped;
+  using ObservationAngularSpeedStampedMsg =
+    romea_localisation_msgs::msg::ObservationAngularSpeedStamped;
 
 public :
 
   ROMEA_LOCALISATION_IMU_PUBLIC
-  IMULocalisationPlugin(const rclcpp::NodeOptions & options);
+  explicit IMULocalisationPlugin(const rclcpp::NodeOptions & options);
 
   ROMEA_LOCALISATION_IMU_PUBLIC
-  virtual ~IMULocalisationPlugin()=default;
+  virtual ~IMULocalisationPlugin() = default;
 
   ROMEA_LOCALISATION_IMU_PUBLIC
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
@@ -63,13 +69,13 @@ protected:
 
   void process_odom_(OdometryMsg::ConstSharedPtr msg);
 
-  void process_angular_speed_(const rclcpp::Time & stamp,const ImuMsg & msg);
+  void process_angular_speed_(const rclcpp::Time & stamp, const ImuMsg & msg);
 
-  void process_attitude_(const rclcpp::Time & stamp,const ImuMsg & msg);
+  void process_attitude_(const rclcpp::Time & stamp, const ImuMsg & msg);
 
-  void publish_angular_speed_(const rclcpp::Time & stamp,const std::string & frame_id);
+  void publish_angular_speed_(const rclcpp::Time & stamp, const std::string & frame_id);
 
-  void publish_attitude_(const rclcpp::Time & stamp,const std::string & frame_id);
+  void publish_attitude_(const rclcpp::Time & stamp, const std::string & frame_id);
 
   void timer_callback_();
 
@@ -92,6 +98,6 @@ protected:
   bool enable_accelerations_;
 };
 
-}
+}  // namespace romea
 
-#endif
+#endif  // ROMEA_LOCALISATION_IMU_IMU_LOCALISATION_PLUGIN_HPP

@@ -1,8 +1,11 @@
-#ifndef __ImuLocalisationPluginParameters_HPP__
-#define __ImuLocalisationPluginParameters_HPP__
+#ifndef ROMEA_LOCALISATION_IMU_IMU_LOCALISATION_PLUGIN_PARAMETERS_HPP_
+#define ROMEA_LOCALISATION_IMU_IMU_LOCALISATION_PLUGIN_PARAMETERS_HPP_
 
-#include <rclcpp/node.hpp>
+// eigen
 #include <Eigen/Geometry>
+
+// ros
+#include <rclcpp/node.hpp>
 
 namespace romea {
 
@@ -38,6 +41,6 @@ double get_imu_magnetic_range(rclcpp::Node::SharedPtr node);
 double get_imu_heading_std(rclcpp::Node::SharedPtr node);
 Eigen::Affine3d get_imu_body_pose(rclcpp::Node::SharedPtr node);
 
-}
+}  // namespace romea
 
-#endif
+#endif ROMEA_LOCALISATION_IMU_IMU_LOCALISATION_PLUGIN_PARAMETERS_HPP_
