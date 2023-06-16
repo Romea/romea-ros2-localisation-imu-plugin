@@ -4,11 +4,11 @@
 
   <name>romea_imu_localisation_plugin</name>
   <version>0.0.0</version>
+
   <description>Package romea_imu_localisation_plugin description</description>
 
-  <author email="jean.laneurit@inrae.fr">Jean Laneurit</author>
   <maintainer email="jean.laneurit@inrae.fr">Jean Laneurit</maintainer>
-  <license>TODO: License declaration</license>
+  <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
