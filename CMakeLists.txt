@@ -3,16 +3,16 @@ project(romea_imu_localisation_plugin)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
- set(CMAKE_C_STANDARD 99)
+  set(CMAKE_C_STANDARD 99)
 endif()
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
- set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
- add_compile_options(-Wall -Wextra -Wpedantic)
+  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 
@@ -30,27 +30,26 @@ find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
- src/imu_localisation_plugin.cpp
- src/imu_localisation_plugin_parameters.cpp)
+  src/imu_localisation_plugin.cpp
+  src/imu_localisation_plugin_parameters.cpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
- $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
- $<INSTALL_INTERFACE:include>)
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 
 target_compile_definitions(${PROJECT_NAME}
- PRIVATE "ROMEA_LOCALISATION_IMU_BUILDING_DLL")
+  PRIVATE "ROMEA_LOCALISATION_IMU_BUILDING_DLL")
 
 ament_target_dependencies(${PROJECT_NAME}
- rclcpp
- romea_core_common
- romea_core_localisation
- romea_core_localisation_imu
- romea_common_utils
- romea_localisation_msgs
- romea_localisation_utils
- sensor_msgs
- nav_msgs
- )
+  rclcpp
+  romea_core_common
+  romea_core_localisation
+  romea_core_localisation_imu
+  romea_common_utils
+  romea_localisation_msgs
+  romea_localisation_utils
+  sensor_msgs
+  nav_msgs)
 
 rclcpp_components_register_node(${PROJECT_NAME}
   PLUGIN "romea::IMULocalisationPlugin"
@@ -59,10 +58,10 @@ rclcpp_components_register_node(${PROJECT_NAME}
 
 
 install(TARGETS
- ${PROJECT_NAME}
- ARCHIVE DESTINATION lib
- LIBRARY DESTINATION lib
- RUNTIME DESTINATION bin)
+  ${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
 
 #add_executable(${PROJECT_NAME}_node src/imu_localisation_plugin_node.cpp)
 #target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME})
@@ -89,8 +88,8 @@ install(TARGETS
 #ament_export_targets(${PROJECT_NAME})
 
 install(TARGETS
- ${PROJECT_NAME}
- DESTINATION lib/${PROJECT_NAME})
+  ${PROJECT_NAME}
+  DESTINATION lib/${PROJECT_NAME})
 
 #install(
 #  DIRECTORY include/
@@ -108,12 +107,13 @@ install(TARGETS
 
 #install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
 
-#if(BUILD_TESTING)
+if(BUILD_TESTING)
 
-#    find_package(ament_lint_auto REQUIRED)
-#    ament_lint_auto_find_test_dependencies()
-#    add_subdirectory(test)
+  find_package(ament_lint_auto REQUIRED)
+  list(APPEND AMENT_LINT_AUTO_EXCLUDE ament_cmake_copyright)
+  ament_lint_auto_find_test_dependencies()
+  #  add_subdirectory(test)
 
-#endif()
+endif()
 
 ament_package()

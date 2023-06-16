@@ -1,30 +1,33 @@
-#ifndef ROMEA_LOCALISATION_IMU_IMU_LOCALISATION_PLUGIN_HPP
-#define ROMEA_LOCALISATION_IMU_IMU_LOCALISATION_PLUGIN_HPP
+// Copyright 2022 INRAE, French National Research Institute for Agriculture, Food and Environment
+// Add license
+
+#ifndef ROMEA_LOCALISATION_IMU__IMU_LOCALISATION_PLUGIN_HPP_
+#define ROMEA_LOCALISATION_IMU__IMU_LOCALISATION_PLUGIN_HPP_
 
 // std
 #include <string>
 #include <memory>
 
 // ros
-#include <rclcpp/rclcpp.hpp>
-#include <sensor_msgs/msg/imu.hpp>
-#include <nav_msgs/msg/odometry.hpp>
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/imu.hpp"
+#include "nav_msgs/msg/odometry.hpp"
 
 // romea
+#include "romea_core_localisation_imu/LocalisationIMUPlugin.hpp"
+#include "romea_common_utils/conversions/diagnostic_conversions.hpp"
+#include "romea_common_utils/publishers/diagnostic_publisher.hpp"
+#include "romea_localisation_utils/conversions/observation_angular_speed_conversions.hpp"
+#include "romea_localisation_utils/conversions/observation_attitude_conversions.hpp"
 #include "romea_localisation_imu/visibility_control.h"
-#include <romea_core_localisation_imu/LocalisationIMUPlugin.hpp>
-#include <romea_localisation_utils/conversions/observation_angular_speed_conversions.hpp>
-#include <romea_localisation_utils/conversions/observation_attitude_conversions.hpp>
-#include <romea_common_utils/conversions/diagnostic_conversions.hpp>
-#include <romea_common_utils/publishers/diagnostic_publisher.hpp>
 
-namespace romea {
+namespace romea
+{
 
 
 class IMULocalisationPlugin
 {
-public :
-
+public:
   using ImuMsg = sensor_msgs::msg::Imu;
   using OdometryMsg = nav_msgs::msg::Odometry;
   using ObservationAttitudeStampedMsg =
@@ -32,8 +35,7 @@ public :
   using ObservationAngularSpeedStampedMsg =
     romea_localisation_msgs::msg::ObservationAngularSpeedStamped;
 
-public :
-
+public:
   ROMEA_LOCALISATION_IMU_PUBLIC
   explicit IMULocalisationPlugin(const rclcpp::NodeOptions & options);
 
@@ -45,7 +47,6 @@ public :
   get_node_base_interface() const;
 
 protected:
-
   void declare_parameters_();
 
   void init_attitude_publisher_();
@@ -65,7 +66,7 @@ protected:
   void init_timer_();
 
 
-  void process_imu_(ImuMsg::ConstSharedPtr  msg);
+  void process_imu_(ImuMsg::ConstSharedPtr msg);
 
   void process_odom_(OdometryMsg::ConstSharedPtr msg);
 
@@ -79,9 +80,7 @@ protected:
 
   void timer_callback_();
 
-
 protected:
-
   rclcpp::Node::SharedPtr node_;
   std::unique_ptr<LocalisationIMUPlugin> plugin_;
   ObservationAngularSpeed angular_speed_observation_;
@@ -100,4 +99,4 @@ protected:
 
 }  // namespace romea
 
-#endif  // ROMEA_LOCALISATION_IMU_IMU_LOCALISATION_PLUGIN_HPP
+#endif  // ROMEA_LOCALISATION_IMU__IMU_LOCALISATION_PLUGIN_HPP_

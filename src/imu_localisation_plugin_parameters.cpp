@@ -1,9 +1,13 @@
-//romea
-#include "romea_localisation_imu/imu_localisation_plugin_parameters.hpp"
-#include <romea_common_utils/params/node_parameters.hpp>
-#include <romea_common_utils/params/eigen_parameters.hpp>
+// Copyright 2022 INRAE, French National Research Institute for Agriculture, Food and Environment
+// Add license
 
-namespace{
+// romea
+#include "romea_localisation_imu/imu_localisation_plugin_parameters.hpp"
+#include "romea_common_utils/params/node_parameters.hpp"
+#include "romea_common_utils/params/eigen_parameters.hpp"
+
+namespace
+{
 
 const char restamping_param_name[] = "restamping";
 const char enable_accelerations_param_name[] = "enable_accelerations";
@@ -14,14 +18,15 @@ const char acceleration_bias_stability_std_param_name[] = "imu.acceleration_bias
 const char acceleration_range_param_name[] = "imu.acceleration_range";
 const char angular_speed_noise_density_param_name[] = "imu.angular_speed_noise_density";
 const char angular_speed_bias_stability_std_param_name[] = "imu.angular_speed_bias_stability_std";
-const char angular_speed_range_param_name[] = "imu_angular_speed_range";
+const char angular_speed_range_param_name[] = "imu.angular_speed_range";
 const char magnetic_noise_density_param_name[] = "imu.magnetic_noise_density";
 const char magnetic_bias_stability_std_param_name[] = "imu.magnetic_bias_stability_std";
 const char magnetic_range_param_name[] = "imu.magnetic_range";
 const char heading_std_param_name[] = "imu.heading_std";
 }  // namespace
 
-namespace romea {
+namespace romea
+{
 
 //-----------------------------------------------------------------------------
 void declare_restamping(rclcpp::Node::SharedPtr node)
@@ -188,8 +193,7 @@ double get_imu_heading_std(rclcpp::Node::SharedPtr node)
 //-----------------------------------------------------------------------------
 Eigen::Affine3d get_imu_body_pose(rclcpp::Node::SharedPtr node)
 {
-   return get_eigen_rigid_transformation_parameter<Eigen::Affine3d>(node, "imu");
+  return get_eigen_rigid_transformation_parameter<Eigen::Affine3d>(node, "imu");
 }
 
 }  // namespace romea
-
