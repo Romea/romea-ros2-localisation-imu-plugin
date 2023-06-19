@@ -1,12 +1,7 @@
-cache:
-  paths:
-    - ccache/
-
 before_script:
   # Install ssh-agent if not already installed, it is required by Docker.
   - "apt-get -qq update -y"
   - "apt-get -qq install git build-essential openssh-client sudo -y"
-  - "apt-get -qq install libyaml-cpp-dev -y"
   # Run ssh-agent (inside the build environment)
   - eval $(ssh-agent -s)
   # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
@@ -22,7 +17,6 @@ before_script:
   - mkdir -p ${CI_PROJECT_DIR}/workspace/src
   - cd ${CI_PROJECT_DIR}/workspace
   - vcs import src < ${CI_PROJECT_DIR}/${CI_PROJECT_NAME}.repos
-  - git clone git@gitlab-ssh.irstea.fr:romea_ros2/interfaces/vehicles/adap2e.git ${CI_PROJECT_DIR}/workspace/src/interfaces/vehicles
   - rosdep install --from-paths src --ignore-src -y --as-root apt:false
   - set +e
   - vcs custom --git --args checkout ${CI_COMMIT_BRANCH}
