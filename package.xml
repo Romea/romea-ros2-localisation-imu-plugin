@@ -13,6 +13,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
   <depend>romea_core_common</depend>
   <depend>romea_core_localisation</depend>
   <depend>romea_core_localisation_imu</depend>

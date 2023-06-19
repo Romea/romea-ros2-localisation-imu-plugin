@@ -19,6 +19,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(romea_core_common REQUIRED)
 find_package(romea_core_imu REQUIRED)
 find_package(romea_core_localisation REQUIRED)
@@ -42,6 +43,7 @@ target_compile_definitions(${PROJECT_NAME}
 
 ament_target_dependencies(${PROJECT_NAME}
   rclcpp
+  rclcpp_components
   romea_core_common
   romea_core_localisation
   romea_core_localisation_imu
