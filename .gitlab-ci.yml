@@ -1,0 +1,49 @@
+cache:
+  paths:
+    - ccache/
+
+before_script:
+  # Install ssh-agent if not already installed, it is required by Docker.
+  - "apt-get -qq update -y"
+  - "apt-get -qq install git build-essential openssh-client sudo -y"
+  - "apt-get -qq install libyaml-cpp-dev -y"
+  # Run ssh-agent (inside the build environment)
+  - eval $(ssh-agent -s)
+  # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+  - ssh-add <(echo "$SSH_PRIVATE_KEY")
+  # For Docker builds disable host key checking. Be aware that by adding that
+  # you are suspectible to man-in-the-middle attacks.
+  # WARNING: Use this only with the Docker executor, if you use it with shell
+  # you will overwrite your user's SSH config.
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  # create workspace
+  - rm -rf ${CI_PROJECT_DIR}/workspace/src >/dev/null 2>&1
+  - mkdir -p ${CI_PROJECT_DIR}/workspace/src
+  - cd ${CI_PROJECT_DIR}/workspace
+  - vcs import src < ${CI_PROJECT_DIR}/${CI_PROJECT_NAME}.repos
+  - git clone git@gitlab-ssh.irstea.fr:romea_ros2/interfaces/vehicles/adap2e.git ${CI_PROJECT_DIR}/workspace/src/interfaces/vehicles
+  - rosdep install --from-paths src --ignore-src -y --as-root apt:false
+  - set +e
+  - vcs custom --git --args checkout ${CI_COMMIT_BRANCH}
+  - set -e
+
+# galatic
+galactic_focal_build:
+  image: ros:galactic-ros-base-focal
+  stage: build
+  script:
+    - colcon build
+    # - source install/setup.bash
+    # - colcon test --packages-select
+    # - colcon test-result --verbose
+
+# galatic
+humble_jammy_build:
+  image: ros:humble-ros-base-jammy
+  stage: build
+  script:
+    - colcon build
+    # - source install/setup.bash
+    # - colcon test --packages-select
+    # - colcon test-result --verbose

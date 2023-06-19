@@ -1,0 +1,37 @@
+repositories:
+    romea_core/romea_common:
+        type: git
+        url: git@gitlab-ssh.irstea.fr:romea_core/romea_common.git
+        version: devel
+    romea_core/romea_imu:
+        type: git
+        url: git@gitlab-ssh.irstea.fr:romea_core/romea_imu.git
+        version: devel
+    romea_core/romea_filtering:
+        type: git
+        url: git@gitlab-ssh.irstea.fr:romea_core/romea_filtering.git
+    romea_core/romea_localisation:
+        type: git
+        url: git@gitlab-ssh.irstea.fr:romea_core/romea_localisation.git
+    romea_core/romea_localisation_imu:
+        type: git
+        url: git@gitlab-ssh.irstea.fr:romea_core/romea_localisation_imu.git
+
+    romea_ros2/tools/romea_common:
+        type: git
+        url: git@gitlab-ssh.irstea.fr:romea_ros2/tools/romea_common.git
+        version: devel
+    romea_ros2/interfaces/sensors/romea_imu:
+        type: git
+        url: git@gitlab-ssh.irstea.fr:romea_ros2/interfaces/sensors/romea_imu.git
+        version: devel
+    romea_ros2/algorithms/localisation/romea_localisation_msgs:
+        type: git
+        uri: git@gitlab-ssh.irstea.fr:romea_ros2/algorithms/localisation/romea_localisation_msgs.git
+        version: devel
+    romea_ros2/algorithms/localisation/romea_localisation_utils:
+        type: git
+        uri: git@gitlab-ssh.irstea.fr:romea_ros2/algorithms/localisation/romea_localisation_utils.git
+    romea_ros2/algorithms/localisation/romea_localisation_imu:
+        type: git
+        uri: git@gitlab-ssh.irstea.fr:romea_ros2/algorithms/localisation/romea_localisation_imu.git
