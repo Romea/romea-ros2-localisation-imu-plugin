@@ -81,7 +81,6 @@ void IMULocalisationPlugin::init_angular_speed_publisher_()
 {
   angular_speed_pub_ = node_->create_publisher<ObservationAngularSpeedStampedMsg>(
     "angular_speed", sensor_data_qos());
-
 }
 
 //-----------------------------------------------------------------------------
