@@ -37,7 +37,7 @@ repositories:
         type: git
         url: git@gitlab-ssh.irstea.fr:romea_ros2/algorithms/localisation/romea_localisation_utils.git
         version: devel
-    romea_ros2/algorithms/localisation/romea_localisation_gps:
+    romea_ros2/algorithms/localisation/romea_localisation_imu_plugin:
         type: git
-        url: git@gitlab-ssh.irstea.fr:romea_ros2/algorithms/localisation/romea_localisation_imu.git
+        url: git@gitlab-ssh.irstea.fr:romea_ros2/algorithms/localisation/romea_localisation_imu_plugin.git
         version: devel
