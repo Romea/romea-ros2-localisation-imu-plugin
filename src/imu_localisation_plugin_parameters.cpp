@@ -2,7 +2,7 @@
 // Add license
 
 // romea
-#include "romea_localisation_imu/imu_localisation_plugin_parameters.hpp"
+#include "romea_localisation_imu_plugin/imu_localisation_plugin_parameters.hpp"
 #include "romea_common_utils/params/node_parameters.hpp"
 #include "romea_common_utils/params/eigen_parameters.hpp"
 

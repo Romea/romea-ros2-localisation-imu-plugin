@@ -19,7 +19,7 @@
 #include "romea_common_utils/publishers/diagnostic_publisher.hpp"
 #include "romea_localisation_utils/conversions/observation_angular_speed_conversions.hpp"
 #include "romea_localisation_utils/conversions/observation_attitude_conversions.hpp"
-#include "romea_localisation_imu/visibility_control.h"
+#include "romea_localisation_imu_plugin/visibility_control.h"
 
 namespace romea
 {
