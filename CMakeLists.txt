@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(romea_imu_localisation_plugin)
+project(romea_localisation_imu_plugin)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -92,6 +92,11 @@ install(TARGETS
 install(TARGETS
   ${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME})
+
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
 #install(
 #  DIRECTORY include/

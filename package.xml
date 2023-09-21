@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
 
-  <name>romea_imu_localisation_plugin</name>
+  <name>romea_localisation_imu_plugin</name>
   <version>0.0.0</version>
 
   <description>Package romea_imu_localisation_plugin description</description>
