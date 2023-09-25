@@ -1,8 +1,8 @@
 // Copyright 2022 INRAE, French National Research Institute for Agriculture, Food and Environment
 // Add license
 
-#ifndef ROMEA_LOCALISATION_IMU__IMU_LOCALISATION_PLUGIN_HPP_
-#define ROMEA_LOCALISATION_IMU__IMU_LOCALISATION_PLUGIN_HPP_
+#ifndef ROMEA_LOCALISATION_IMU_PLUGIN__IMU_LOCALISATION_PLUGIN_HPP_
+#define ROMEA_LOCALISATION_IMU_PLUGIN__IMU_LOCALISATION_PLUGIN_HPP_
 
 // std
 #include <string>
@@ -36,13 +36,13 @@ public:
     romea_localisation_msgs::msg::ObservationAngularSpeedStamped;
 
 public:
-  ROMEA_LOCALISATION_IMU_PUBLIC
+  ROMEA_LOCALISATION_IMU_PLUGIN_PUBLIC
   explicit IMULocalisationPlugin(const rclcpp::NodeOptions & options);
 
-  ROMEA_LOCALISATION_IMU_PUBLIC
+  ROMEA_LOCALISATION_IMU_PLUGIN_PUBLIC
   virtual ~IMULocalisationPlugin() = default;
 
-  ROMEA_LOCALISATION_IMU_PUBLIC
+  ROMEA_LOCALISATION_IMU_PLUGIN_PUBLIC
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
   get_node_base_interface() const;
 
@@ -99,4 +99,4 @@ protected:
 
 }  // namespace romea
 
-#endif  // ROMEA_LOCALISATION_IMU__IMU_LOCALISATION_PLUGIN_HPP_
+#endif  // ROMEA_LOCALISATION_IMU_PLUGIN__IMU_LOCALISATION_PLUGIN_HPP_
