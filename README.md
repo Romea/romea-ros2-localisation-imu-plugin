@@ -1,6 +1,6 @@
 # 1 Overview #
 
-This package provides imu plugin for vehicle localisation. It takes data coming from an imu in order to compute unbiased angular speed and vehicle attitude (roll and pitch). The angular speed bias (angular speed average) is estimated when the vehicle does not move . A zero velocity dectection algorithm based on accelerometers and odometry data is used to assert if vehicle does not move or not.
+This package provides imu plugin for robot localisation. It takes data coming from an imu in order to compute unbiased angular speed and vehicle attitude (roll and pitch). The angular speed bias (angular speed average) is estimated when the robot does not move . A zero velocity dectection algorithm based on accelerometers and odometry data is used to assert if robot does not move or not.
 
 # 2 Node #
 
