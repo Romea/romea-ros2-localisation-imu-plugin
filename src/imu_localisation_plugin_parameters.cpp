@@ -38,6 +38,8 @@ const char heading_std_param_name[] = "imu.heading_std";
 
 namespace romea
 {
+namespace ros2
+{
 
 //-----------------------------------------------------------------------------
 void declare_restamping(rclcpp::Node::SharedPtr node)
@@ -207,4 +209,5 @@ Eigen::Affine3d get_imu_body_pose(rclcpp::Node::SharedPtr node)
   return get_eigen_rigid_transformation_parameter<Eigen::Affine3d>(node, "imu");
 }
 
+}  // namespace ros2
 }  // namespace romea

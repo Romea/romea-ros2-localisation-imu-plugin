@@ -33,6 +33,8 @@
 
 namespace romea
 {
+namespace ros2
+{
 
 //-----------------------------------------------------------------------------
 IMULocalisationPlugin::IMULocalisationPlugin(const rclcpp::NodeOptions & options)
@@ -104,7 +106,8 @@ void IMULocalisationPlugin::init_attitude_publisher_()
 //-----------------------------------------------------------------------------
 void IMULocalisationPlugin::init_diagnostic_publisher_()
 {
-  diagnostic_pub_ = make_diagnostic_publisher<DiagnosticReport>(node_, node_->get_name(), 1.0);
+  diagnostic_pub_ =
+    make_diagnostic_publisher<core::DiagnosticReport>(node_, node_->get_name(), 1.0);
 }
 
 //-----------------------------------------------------------------------------
@@ -129,7 +132,7 @@ void IMULocalisationPlugin::init_odometry_subscriber_()
 //-----------------------------------------------------------------------------
 void IMULocalisationPlugin::init_plugin_()
 {
-  auto imu = std::make_unique<IMUAHRS>(
+  auto imu = std::make_unique<core::IMUAHRS>(
     get_imu_rate(node_),
     get_imu_acceleration_noise_density(node_),
     get_imu_acceleration_bias_stability_std(node_),
@@ -144,7 +147,7 @@ void IMULocalisationPlugin::init_plugin_()
 
   imu->setBodyPose(get_imu_body_pose(node_));
 
-  plugin_ = std::make_unique<LocalisationIMUPlugin>(std::move(imu));
+  plugin_ = std::make_unique<core::LocalisationIMUPlugin>(std::move(imu));
   enable_accelerations_ = get_enable_accelerations(node_);
   restamping_ = get_restamping(node_);
 }
@@ -220,7 +223,7 @@ void IMULocalisationPlugin::process_attitude_(
 {
   Eigen::Quaterniond q;
   to_romea(msg.orientation, q);
-  Eigen::Vector3d orientation = quaternionToEulerAngles(q);
+  Eigen::Vector3d orientation = core::quaternionToEulerAngles(q);
 
   if (plugin_->computeAttitude(
       to_romea_duration(stamp),
@@ -260,8 +263,9 @@ void IMULocalisationPlugin::timer_callback_()
   diagnostic_pub_->publish(stamp, plugin_->makeDiagnosticReport(to_romea_duration(stamp)));
 }
 
+}  // namespace ros2
 }  // namespace romea
 
 //-----------------------------------------------------------------------------
 #include "rclcpp_components/register_node_macro.hpp"
-RCLCPP_COMPONENTS_REGISTER_NODE(romea::IMULocalisationPlugin)
+RCLCPP_COMPONENTS_REGISTER_NODE(romea::ros2::IMULocalisationPlugin)

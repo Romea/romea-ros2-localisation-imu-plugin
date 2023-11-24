@@ -34,6 +34,8 @@
 
 namespace romea
 {
+namespace ros2
+{
 
 
 class IMULocalisationPlugin
@@ -93,21 +95,22 @@ protected:
 
 protected:
   rclcpp::Node::SharedPtr node_;
-  std::unique_ptr<LocalisationIMUPlugin> plugin_;
-  ObservationAngularSpeed angular_speed_observation_;
-  ObservationAttitude attitude_observation_;
+  std::unique_ptr<core::LocalisationIMUPlugin> plugin_;
+  core::ObservationAngularSpeed angular_speed_observation_;
+  core::ObservationAttitude attitude_observation_;
 
   rclcpp::Subscription<ImuMsg>::SharedPtr imu_sub_;
   rclcpp::Subscription<OdometryMsg>::SharedPtr odom_sub_;
   rclcpp::Publisher<ObservationAttitudeStampedMsg>::SharedPtr attitude_pub_;
   rclcpp::Publisher<ObservationAngularSpeedStampedMsg>::SharedPtr angular_speed_pub_;
-  std::shared_ptr<StampedPublisherBase<DiagnosticReport>> diagnostic_pub_;
+  std::shared_ptr<StampedPublisherBase<core::DiagnosticReport>> diagnostic_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 
   bool restamping_;
   bool enable_accelerations_;
 };
 
+}  // namespace ros2
 }  // namespace romea
 
 #endif  // ROMEA_LOCALISATION_IMU_PLUGIN__IMU_LOCALISATION_PLUGIN_HPP_

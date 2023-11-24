@@ -50,7 +50,7 @@ def launch_setup(context, *args, **kwargs):
     else:
         composable_node = ComposableNode(
                 package="romea_localisation_imu_plugin",
-                plugin="romea::IMULocalisationPlugin",
+                plugin="romea::ros2::IMULocalisationPlugin",
                 name=plugin_name,
                 parameters=[plugin_configuration],
             )

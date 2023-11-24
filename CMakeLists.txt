@@ -54,7 +54,7 @@ ament_target_dependencies(${PROJECT_NAME}
   nav_msgs)
 
 rclcpp_components_register_node(${PROJECT_NAME}
-  PLUGIN "romea::IMULocalisationPlugin"
+  PLUGIN "romea::ros2::IMULocalisationPlugin"
   EXECUTABLE imu_localisation_plugin_node
 )
 
