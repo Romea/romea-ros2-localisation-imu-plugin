@@ -1,10 +1,10 @@
-# 1 Overview #
+# romea_localisation_imu_plugin
 
-This package provides imu plugin for robot localisation. It takes data coming from an imu in order to compute unbiased angular speed and vehicle attitude (roll and pitch). The angular speed bias (angular speed average) is estimated when the robot does not move . A zero velocity dectection algorithm based on accelerometers and odometry data is used to assert if robot does not move or not.
+This package provides an IMU plugin for robot localisation, developed within the ROMEA ecosystem for ROS2. It processes data from an IMU to compute unbiased angular speed and vehicle attitude (roll and pitch). The angular speed bias (average angular speed) is estimated when the robot is stationary. A zero-velocity detection algorithm, based on accelerometer and odometry data, is used to determine whether the robot is stationary.
 
-# 2 Node #
+## ROS2 plugin node description ##
 
-### 2.1 Subscribed Topics ###
+#### 1) Subscribed Topics ####
 
 - vehicle_controller/odom (nav_msgs::msg::msg::Odometry)
 
@@ -14,7 +14,7 @@ This package provides imu plugin for robot localisation. It takes data coming fr
 
   This topic is published by imu sensor and provides linear accelerations, angular speeds and attitude angles
 
-### 2.2 Published Topics ###
+#### 2) Published Topics ####
 
 - angular_speed (romea_localisation_msgs::msg::ObservationAngularSpeedStamped)
 
@@ -24,12 +24,12 @@ This package provides imu plugin for robot localisation. It takes data coming fr
 
   Roll and pitch angles and their covariance
 
-### 2.3 Parameters ###
+#### 3) Parameters ####
 
 - imu.acceleration_noise_density (double)
- 
+
   Noise density of acceleration data in m/s^2/√Hz
-   
+  
 - imu.acceleration_bias_stability_std (double)
 
   Standard deviation of acceleration data  biases in m/s^2
@@ -82,3 +82,26 @@ This package provides imu plugin for robot localisation. It takes data coming fr
 
   Enable or not debug logs
 
+## **Contributing**
+
+If you'd like to contribute to this project, here are some guidelines:
+
+1. Fork the repository.
+2. Create a new branch for your changes.
+3. Make your changes.
+4. Write tests to cover your changes.
+5. Run the tests to ensure they pass.
+6. Commit your changes.
+7. Push your changes to yo
+
+## License
+
+This project is released under the Apache License 2.0. See the LICENSE file for details.
+
+### Authors
+
+ The romea_localisation_imu_plugin project was developed by **Jean Laneurit** in the context of BaudetRob2 ANR project.
+
+### Contact
+
+If you have any questions or comments about romea_localisation_imu_plugin project, please contact **[Jean Laneurit](mailto:jean.laneurit@inrae.fr)** 
