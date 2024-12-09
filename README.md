@@ -1,4 +1,4 @@
-# romea_localisation_imu_plugin
+# romea_ros2_localisation_imu_plugin
 
 This package provides an IMU plugin for robot localisation, developed within the ROMEA ecosystem for ROS2. It processes data from an IMU to compute unbiased angular speed and vehicle attitude (roll and pitch). The angular speed bias (average angular speed) is estimated when the robot is stationary. A zero-velocity detection algorithm, based on accelerometer and odometry data, is used to determine whether the robot is stationary.
 
@@ -84,7 +84,7 @@ This package provides an IMU plugin for robot localisation, developed within the
 
 ## **Usage**
 
-See romea_localisation_bringup project
+See romea_ros2_localisation_bringup project
 
 ## **Contributing**
 
@@ -104,8 +104,8 @@ This project is released under the Apache License 2.0. See the LICENSE file for 
 
 ### Authors
 
- The romea_localisation_imu_plugin project was developed by **Jean Laneurit** in the context of BaudetRob2 ANR project.
+ The romea_ros2_localisation_imu_plugin project was developed by **Jean Laneurit** in the context of BaudetRob2 ANR project.
 
 ### Contact
 
-If you have any questions or comments about romea_localisation_imu_plugin project, please contact **[Jean Laneurit](mailto:jean.laneurit@inrae.fr)** 
+If you have any questions or comments about romea_ros2_localisation_imu_plugin project, please contact **[Jean Laneurit](mailto:jean.laneurit@inrae.fr)** 
