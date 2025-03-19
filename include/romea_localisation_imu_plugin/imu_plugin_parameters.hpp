@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ROMEA_LOCALISATION_IMU_PLUGIN__IMU_LOCALISATION_PLUGIN_PARAMETERS_HPP_
-#define ROMEA_LOCALISATION_IMU_PLUGIN__IMU_LOCALISATION_PLUGIN_PARAMETERS_HPP_
+#ifndef ROMEA_LOCALISATION_IMU_PLUGIN__IMU_PLUGIN_PARAMETERS_HPP_
+#define ROMEA_LOCALISATION_IMU_PLUGIN__IMU_PLUGIN_PARAMETERS_HPP_
 
 // eigen
 #include <Eigen/Geometry>
@@ -24,6 +24,8 @@
 namespace romea
 {
 namespace ros2
+{
+namespace localisation
 {
 
 void declare_restamping(rclcpp::Node::SharedPtr node);
@@ -58,7 +60,8 @@ double get_imu_magnetic_range(rclcpp::Node::SharedPtr node);
 double get_imu_heading_std(rclcpp::Node::SharedPtr node);
 Eigen::Affine3d get_imu_body_pose(rclcpp::Node::SharedPtr node);
 
+}  // namespace localisation
 }  // namespace ros2
 }  // namespace romea
 
-#endif  // ROMEA_LOCALISATION_IMU_PLUGIN__IMU_LOCALISATION_PLUGIN_PARAMETERS_HPP_
+#endif  // ROMEA_LOCALISATION_IMU_PLUGIN__IMU_PLUGIN_PARAMETERS_HPP_

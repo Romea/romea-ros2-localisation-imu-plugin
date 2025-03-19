@@ -31,8 +31,8 @@ find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
-  src/imu_localisation_plugin.cpp
-  src/imu_localisation_plugin_parameters.cpp)
+  src/imu_plugin.cpp
+  src/imu_plugin_parameters.cpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -54,7 +54,7 @@ ament_target_dependencies(${PROJECT_NAME}
   nav_msgs)
 
 rclcpp_components_register_node(${PROJECT_NAME}
-  PLUGIN "romea::ros2::IMULocalisationPlugin"
+  PLUGIN "romea::ros2::localisation::IMUPlugin"
   EXECUTABLE imu_localisation_plugin_node
 )
 

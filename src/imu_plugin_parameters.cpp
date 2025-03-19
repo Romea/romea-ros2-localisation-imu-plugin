@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // romea
-#include "romea_localisation_imu_plugin/imu_localisation_plugin_parameters.hpp"
+#include "romea_localisation_imu_plugin/imu_plugin_parameters.hpp"
 #include "romea_common_utils/params/node_parameters.hpp"
 #include "romea_common_utils/params/eigen_parameters.hpp"
 
@@ -39,6 +39,8 @@ const char heading_std_param_name[] = "imu.heading_std";
 namespace romea
 {
 namespace ros2
+{
+namespace localisation
 {
 
 //-----------------------------------------------------------------------------
@@ -209,5 +211,6 @@ Eigen::Affine3d get_imu_body_pose(rclcpp::Node::SharedPtr node)
   return get_eigen_rigid_transformation_parameter<Eigen::Affine3d>(node, "imu");
 }
 
+}  // namespace localisation
 }  // namespace ros2
 }  // namespace romea

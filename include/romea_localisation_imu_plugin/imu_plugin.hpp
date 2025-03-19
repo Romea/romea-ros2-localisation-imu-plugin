@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ROMEA_LOCALISATION_IMU_PLUGIN__IMU_LOCALISATION_PLUGIN_HPP_
-#define ROMEA_LOCALISATION_IMU_PLUGIN__IMU_LOCALISATION_PLUGIN_HPP_
+#ifndef ROMEA_LOCALISATION_IMU_PLUGIN__IMU_PLUGIN_HPP_
+#define ROMEA_LOCALISATION_IMU_PLUGIN__IMU_PLUGIN_HPP_
 
 // std
 #include <string>
@@ -25,7 +25,7 @@
 #include "nav_msgs/msg/odometry.hpp"
 
 // romea
-#include "romea_core_localisation_imu/LocalisationIMUPlugin.hpp"
+#include "romea_core_localisation_imu/imu_plugin.hpp"
 #include "romea_common_utils/conversions/diagnostic_conversions.hpp"
 #include "romea_common_utils/publishers/diagnostic_publisher.hpp"
 #include "romea_localisation_utils/conversions/observation_angular_speed_conversions.hpp"
@@ -36,9 +36,11 @@ namespace romea
 {
 namespace ros2
 {
+namespace localisation
+{
 
 
-class IMULocalisationPlugin
+class IMUPlugin
 {
 public:
   using ImuMsg = sensor_msgs::msg::Imu;
@@ -50,10 +52,10 @@ public:
 
 public:
   ROMEA_LOCALISATION_IMU_PLUGIN_PUBLIC
-  explicit IMULocalisationPlugin(const rclcpp::NodeOptions & options);
+  explicit IMUPlugin(const rclcpp::NodeOptions & options);
 
   ROMEA_LOCALISATION_IMU_PLUGIN_PUBLIC
-  virtual ~IMULocalisationPlugin() = default;
+  virtual ~IMUPlugin() = default;
 
   ROMEA_LOCALISATION_IMU_PLUGIN_PUBLIC
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
@@ -95,9 +97,9 @@ protected:
 
 protected:
   rclcpp::Node::SharedPtr node_;
-  std::unique_ptr<core::LocalisationIMUPlugin> plugin_;
-  core::ObservationAngularSpeed angular_speed_observation_;
-  core::ObservationAttitude attitude_observation_;
+  std::unique_ptr<core::localisation::IMUPlugin> plugin_;
+  core::localisation::ObservationAngularSpeed angular_speed_observation_;
+  core::localisation::ObservationAttitude attitude_observation_;
 
   rclcpp::Subscription<ImuMsg>::SharedPtr imu_sub_;
   rclcpp::Subscription<OdometryMsg>::SharedPtr odom_sub_;
@@ -110,7 +112,8 @@ protected:
   bool enable_accelerations_;
 };
 
+}  // namespace localisation
 }  // namespace ros2
 }  // namespace romea
 
-#endif  // ROMEA_LOCALISATION_IMU_PLUGIN__IMU_LOCALISATION_PLUGIN_HPP_
+#endif  // ROMEA_LOCALISATION_IMU_PLUGIN__IMU_PLUGIN_HPP_
