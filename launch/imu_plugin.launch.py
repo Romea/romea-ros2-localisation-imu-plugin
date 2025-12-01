@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import yaml
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
-from launch_ros.descriptions import ComposableNode
 from launch_ros.actions import LoadComposableNodes, Node
+from launch_ros.descriptions import ComposableNode
+
+import yaml
 
 
 def get_plugin_name(context):
