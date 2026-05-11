@@ -22,6 +22,8 @@ namespace
 
 const char restamping_param_name[] = "restamping";
 const char enable_accelerations_param_name[] = "enable_accelerations";
+const char disable_angular_speed_bias_computation_param_name[] = 
+  "disable_angular_speed_bias_computation_param_name";
 
 const char rate_param_name[] = "imu.rate";
 const char acceleration_noise_density_param_name[] = "imu.acceleration_noise_density";
@@ -53,6 +55,13 @@ void declare_enable_accelerations(rclcpp::Node::SharedPtr node)
   declare_parameter_with_default<bool>(node, enable_accelerations_param_name, true);
 }
 
+//-----------------------------------------------------------------------------
+void declare_disable_angular_speed_bias_computation(rclcpp::Node::SharedPtr node)
+{
+  declare_parameter_with_default<bool>(
+    node, disable_angular_speed_bias_computation_param_name, true);
+}
+
 //----------------------------------------------------------------------------
 bool get_restamping(rclcpp::Node::SharedPtr node)
 {
@@ -63,6 +72,12 @@ bool get_restamping(rclcpp::Node::SharedPtr node)
 bool get_enable_accelerations(rclcpp::Node::SharedPtr node)
 {
   return get_parameter<bool>(node, enable_accelerations_param_name);
+}
+
+//-----------------------------------------------------------------------------
+bool get_disable_angular_speed_bias_computation(rclcpp::Node::SharedPtr node)
+{
+ return get_parameter<bool>(node, disable_angular_speed_bias_computation_param_name);
 }
 
 //-----------------------------------------------------------------------------

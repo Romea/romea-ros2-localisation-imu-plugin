@@ -108,6 +108,7 @@ protected:
 
   bool restamping_;
   bool enable_accelerations_;
+  bool disable_angular_speed_bias_computation_;
 };
 
 }  // namespace ros2

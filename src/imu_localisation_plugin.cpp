@@ -48,7 +48,8 @@ IMULocalisationPlugin::IMULocalisationPlugin(const rclcpp::NodeOptions & options
   angular_speed_pub_(nullptr),
   diagnostic_pub_(nullptr),
   timer_(nullptr),
-  restamping_(false)
+  restamping_(false),
+  disable_angular_speed_bias_computation_(false)
 {
   declare_parameters_();
   init_plugin_();
@@ -84,6 +85,7 @@ void IMULocalisationPlugin::declare_parameters_()
   declare_imu_heading_std(node_);
   declare_imu_body_pose(node_);
 
+  declare_disable_angular_speed_bias_computation(node_);
   declare_enable_accelerations(node_);
   declare_restamping(node_);
   declare_debug(node_);
@@ -149,6 +151,8 @@ void IMULocalisationPlugin::init_plugin_()
   imu->setBodyPose(get_imu_body_pose(node_));
 
   plugin_ = std::make_unique<core::LocalisationIMUPlugin>(std::move(imu));
+  disable_angular_speed_bias_computation_ = 
+    get_disable_angular_speed_bias_computation(node_);
   enable_accelerations_ = get_enable_accelerations(node_);
   restamping_ = get_restamping(node_);
 }
@@ -188,10 +192,14 @@ void IMULocalisationPlugin::process_odom_(OdometryMsg::ConstSharedPtr msg)
 //-----------------------------------------------------------------------------
 void IMULocalisationPlugin::process_imu_(ImuMsg::ConstSharedPtr msg)
 {
-  // std::cout << " processIMU " << std::endl;
+  std::cout << " processIMU " << std::endl;
+  std::cout << msg->header.stamp.sec <<" "<<  msg->header.stamp.nanosec << std::endl;
+  std::cout << " restamping_ " << restamping_ << std::endl;
 
   auto stamp = restamping_ ? node_->get_clock()->now() :
     rclcpp::Time(msg->header.stamp.sec, msg->header.stamp.nanosec);
+
+  std::cout << stamp.nanoseconds() << std::endl;
 
   process_attitude_(stamp, *msg);
   process_angular_speed_(stamp, *msg);
@@ -203,6 +211,7 @@ void IMULocalisationPlugin::process_angular_speed_(
   const rclcpp::Time & stamp,
   const ImuMsg & msg)
 {
+    std::cout << " process_angular_speed_ 1" << std::endl;
   if (plugin_->computeAngularSpeed(
       to_romea_duration(stamp),
       enable_accelerations_ * msg.linear_acceleration.x,
@@ -213,6 +222,7 @@ void IMULocalisationPlugin::process_angular_speed_(
       msg.angular_velocity.z,
       angular_speed_observation_))
   {
+    std::cout << " process_angular_speed_ 2" << std::endl;
     publish_angular_speed_(stamp, msg.header.frame_id);
   }
 }
