@@ -1,111 +1,140 @@
-# romea_ros2_localisation_imu_plugin
+# romea_localisation_imu_plugin
 
-This package provides an IMU plugin for robot localisation, developed within the ROMEA ecosystem for ROS2. It processes data from an IMU to compute unbiased angular speed and vehicle attitude (roll and pitch). The angular speed bias (average angular speed) is estimated when the robot is stationary. A zero-velocity detection algorithm, based on accelerometer and odometry data, is used to determine whether the robot is stationary.
+`romea_localisation_imu_plugin` provides a ROS2 localisation plugin node that converts IMU data into `romea_localisation_msgs` observations.
 
-## ROS2 plugin node description ##
+The plugin estimates unbiased yaw angular speed and attitude observations from `sensor_msgs/msg/Imu` messages. It also uses vehicle odometry to detect stationary phases, which allows the underlying core plugin to estimate angular speed bias.
 
-#### 1) Subscribed Topics ####
+Internally, the ROS2 component wraps the framework-independent IMU localisation plugin provided by `romea_core_localisation_imu`.
 
-- **vehicle_controller/odom** (nav_msgs::msg::msg::Odometry)
+## 1) Concept
 
-  This topic is pusblished by standard vehicle controllers (diff_drive_controller,ackermann_steering_controller, four_wheel_steering_controller) and provides a lot informations like linear angular and speeds and dead reckoning.
+The IMU localisation plugin is an observation producer. It does not estimate the robot pose by itself. It converts IMU and odometry data into localisation observations that can be fused by localisation filters such as robot-to-world, robot-to-robot or robot-to-human localisation filters.
 
-- **imu/data** (sensor_msgs::msg::Imu)
+```mermaid
+flowchart LR
+  subgraph ros2_inputs["ROS2 input messages"]
+    direction TB
+    imu["imu/data<br/><br/>sensor_msgs/msg/Imu"]
+    odom["vehicle_controller/odom<br/><br/>nav_msgs/msg/Odometry"]
+  end
 
-  This topic is published by imu sensor and provides linear accelerations, angular speeds and attitude angles
+  subgraph plugin_nodes["Localisation plugin node"]
+    plugin["IMU localisation plugin<br/><br/>build angular speed and attitude observations"]
+  end
 
-#### 2) Published Topics ####
+  subgraph observation_msgs["romea_localisation_msgs"]
+    direction TB
+    angular_speed["angular_speed<br/><br/>romea_localisation_msgs/msg/ObservationAngularSpeedStamped"]
+    attitude["attitude<br/><br/>romea_localisation_msgs/msg/ObservationAttitudeStamped"]
+  end
 
-- **angular_speed** (romea_localisation_msgs::msg::ObservationAngularSpeedStamped)
+  subgraph filters["Localisation filters"]
+    filter["robot-to-world localisation<br/> robot-to-robot localisation<br/> robot-to-human localisation"]
+  end
 
-  Unbiased angular speed and its variance 
+  imu -->|consume| plugin
+  odom -->|consume| plugin
+  plugin -->|publish| angular_speed
+  plugin -->|publish| attitude
+  angular_speed -->|fuse| filter
+  attitude -->|fuse| filter
 
-- **attitude** (romea_localisation_msgs::msg::ObservationAttitudeStamped)
+  classDef ros2 fill:#e8f2ff,stroke:#5b8ec7,color:#111,rx:6,ry:6
+  classDef pluginStyle fill:#eaf7ea,stroke:#5c9f5c,color:#111,rx:6,ry:6
+  classDef msg fill:#fff6d8,stroke:#c9a227,color:#111,rx:6,ry:6
+  classDef filterStyle fill:#f1eaff,stroke:#8b6fc6,color:#111,rx:6,ry:6
 
-  Roll and pitch angles and their covariance
+  class imu,odom ros2
+  class plugin pluginStyle
+  class angular_speed,attitude msg
+  class filter filterStyle
 
-#### 3) Parameters ####
+  style ros2_inputs fill:#f6faff,stroke:#9abbe3,rx:6,ry:6
+  style plugin_nodes fill:#f7fff7,stroke:#9ecf9e,rx:6,ry:6
+  style observation_msgs fill:#fffaf0,stroke:#dec86b,rx:6,ry:6
+  style filters fill:#faf7ff,stroke:#b8a4dd,rx:6,ry:6
+```
 
-- **imu.acceleration_noise_density** (double)
+The odometry input is used to estimate the robot linear speed. This helps detect stationary periods and makes angular speed bias estimation more reliable.
 
-  Noise density of acceleration data in m/s^2/√Hz
-  
-- **imu.acceleration_bias_stability_std** (double)
+## 2) Provided Plugin
 
-  Standard deviation of acceleration data  biases in m/s^2
+| Executable | Component plugin |
+| --- | --- |
+| `imu_localisation_plugin_node` | `romea::ros2::localisation::IMUPlugin` |
 
-- **imu.acceleration_range** (double)
+## 3) Input Topics
 
-  Range of acceleration data in m/s^2
+| Topic | Type | Use |
+| --- | --- | --- |
+| `imu/data` | `sensor_msgs/msg/Imu` | IMU acceleration, angular speed and orientation data |
+| `vehicle_controller/odom` | `nav_msgs/msg/Odometry` | Vehicle odometry used to detect stationary phases |
 
-- **imu.angular_speed_noise_density** (double)
+## 4) Output Topics
 
-  Noise density of angular speed data in rad/s/√Hz
+| Topic | Type | Description |
+| --- | --- | --- |
+| `angular_speed` | `romea_localisation_msgs/msg/ObservationAngularSpeedStamped` | Unbiased yaw angular speed observation |
+| `attitude` | `romea_localisation_msgs/msg/ObservationAttitudeStamped` | Roll and pitch attitude observation |
 
-- **imu.angular_speed_bias_stability_std** (double)
+## 5) Parameters
 
-  Standard deviation of angular_speed data biases in rad/s
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `restamping` | bool | `false` | If true, observations are stamped with the node clock instead of the IMU message stamp |
+| `enable_accelerations` | bool | `true` | If true, linear accelerations from the IMU message are used by the core plugin |
+| `debug` | bool | `false` | Enable debug logging |
+| `imu.rate` | double | required | IMU update rate, in hertz |
+| `imu.acceleration_noise_density` | double | required | Acceleration noise density |
+| `imu.acceleration_bias_stability_std` | double | required | Acceleration bias stability standard deviation |
+| `imu.acceleration_range` | double | required | Acceleration measurement range |
+| `imu.angular_speed_noise_density` | double | required | Angular speed noise density |
+| `imu.angular_speed_bias_stability_std` | double | required | Angular speed bias stability standard deviation |
+| `imu.angular_speed_range` | double | required | Angular speed measurement range |
+| `imu.magnetic_noise_density` | double | required | Magnetic field noise density |
+| `imu.magnetic_bias_stability_std` | double | required | Magnetic field bias stability standard deviation |
+| `imu.magnetic_range` | double | required | Magnetic field measurement range |
+| `imu.heading_std` | double | required | Heading standard deviation |
+| `imu.xyz` | double array | required | IMU position in the localisation body frame, in meters |
+| `imu.rpy` | double array | required | IMU orientation in the localisation body frame, in degrees |
 
-- **imu.angular_speed_range** (double)
+## 6) Configuration and Run
 
-  Range of angular speed data in rad/s
-  
-- **imu.magnetic_noise_density** (double)
+Run the IMU localisation plugin with:
 
-  Noise density of magnetic data in T/√Hz
+```bash
+ros2 run romea_localisation_imu_plugin imu_localisation_plugin_node \
+  --ros-args --params-file path/to/imu_localisation_plugin.yaml
+```
 
-- **imu.magnetic_bias_stability_std** (double)
+Example parameter file:
 
-  Standard deviation of magnetic data biases in T
-
-- **imu.magnetic_range** (double)
-
-  Range of magnetic data in T
-
-- **imu.heading_std** (double)
-
-  Standard deviation of heading angle in degrees
-
-- **imu.xyz** (vector of double)
-
-  Imu position in localisation body reference frame (usually base_foot_print_link) in meters
-
-- **imu.rpy** (vector of double)
-
-  Imu orientation in localisation body reference frame (usually base_foot_print_link) in degrees
-
-- **restamping** (bool, default: false)
-
-  If this parameter is set to true stamp of angular speed and attitude messages is equal to computer current time else this stamp is equal imu message stamp.  This paremeter will be used when imu data are coming from a remote master.
-
-- **debug** (bool, default: false)
-
-  Enable or not debug logs
-
-## **Usage**
-
-See romea_ros2_localisation_bringup project
-
-## **Contributing**
-
-If you'd like to contribute to this project, here are some guidelines:
-
-1. Fork the repository.
-2. Create a new branch for your changes.
-3. Make your changes.
-4. Write tests to cover your changes.
-5. Run the tests to ensure they pass.
-6. Commit your changes.
-7. Push your changes to yo
+```yaml
+imu_localisation_plugin:
+  ros__parameters:
+    restamping: false
+    enable_accelerations: true
+    debug: false
+    imu:
+      rate: 100.0
+      acceleration_noise_density: 0.0005
+      acceleration_bias_stability_std: 0.01
+      acceleration_range: 160.0
+      angular_speed_noise_density: 0.0001
+      angular_speed_bias_stability_std: 0.001
+      angular_speed_range: 8.7
+      magnetic_noise_density: 0.001
+      magnetic_bias_stability_std: 0.001
+      magnetic_range: 0.0008
+      heading_std: 1.0
+      xyz: [0.0, 0.0, 0.5]
+      rpy: [0.0, 0.0, 0.0]
+```
 
 ## License
 
-This project is released under the Apache License 2.0. See the LICENSE file for details.
+This project is released under the Apache License 2.0. See the `LICENSE` file for details.
 
-### Authors
+## Authors
 
- The romea_ros2_localisation_imu_plugin project was developed by **Jean Laneurit** in the context of BaudetRob2 ANR project.
-
-### Contact
-
-If you have any questions or comments about romea_ros2_localisation_imu_plugin project, please contact **[Jean Laneurit](mailto:jean.laneurit@inrae.fr)** 
+This package was developed by **Jean Laneurit**.
