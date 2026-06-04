@@ -12,24 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 // std
-#include <string>
 #include <memory>
+#include <string>
 #include <utility>
 
 // romea
-#include "romea_localisation_imu_plugin/imu_plugin_parameters.hpp"
-#include "romea_localisation_imu_plugin/imu_plugin.hpp"
-
-#include "romea_core_common/math/EulerAngles.hpp"
-#include "romea_common_utils/params/node_parameters.hpp"
-#include "romea_common_utils/params/eigen_parameters.hpp"
-#include "romea_common_utils/params/algorithm_parameters.hpp"
-#include "romea_common_utils/conversions/time_conversions.hpp"
 #include "romea_common_utils/conversions/geometry_conversions.hpp"
+#include "romea_common_utils/conversions/time_conversions.hpp"
+#include "romea_common_utils/params/algorithm_parameters.hpp"
+#include "romea_common_utils/params/eigen_parameters.hpp"
+#include "romea_common_utils/params/node_parameters.hpp"
 #include "romea_common_utils/qos.hpp"
-
+#include "romea_core_common/math/EulerAngles.hpp"
+#include "romea_localisation_imu_plugin/imu_plugin.hpp"
+#include "romea_localisation_imu_plugin/imu_plugin_parameters.hpp"
 
 namespace romea
 {
@@ -64,8 +61,7 @@ IMUPlugin::IMUPlugin(const rclcpp::NodeOptions & options)
 }
 
 //-----------------------------------------------------------------------------
-rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
-IMUPlugin::get_node_base_interface() const
+rclcpp::node_interfaces::NodeBaseInterface::SharedPtr IMUPlugin::get_node_base_interface() const
 {
   return node_->get_node_base_interface();
 }
@@ -94,22 +90,21 @@ void IMUPlugin::declare_parameters_()
 //-----------------------------------------------------------------------------
 void IMUPlugin::init_angular_speed_publisher_()
 {
-  angular_speed_pub_ = node_->create_publisher<ObservationAngularSpeedStampedMsg>(
-    "angular_speed", sensor_data_qos());
+  angular_speed_pub_ =
+    node_->create_publisher<ObservationAngularSpeedStampedMsg>("angular_speed", sensor_data_qos());
 }
 
 //-----------------------------------------------------------------------------
 void IMUPlugin::init_attitude_publisher_()
 {
-  attitude_pub_ = node_->create_publisher<ObservationAttitudeStampedMsg>(
-    "attitude", sensor_data_qos());
+  attitude_pub_ =
+    node_->create_publisher<ObservationAttitudeStampedMsg>("attitude", sensor_data_qos());
 }
 
 //-----------------------------------------------------------------------------
 void IMUPlugin::init_diagnostic_publisher_()
 {
-  diagnostic_pub_ =
-    make_diagnostic_publisher<core::DiagnosticReport>(
+  diagnostic_pub_ = make_diagnostic_publisher<core::DiagnosticReport>(
     node_, node_->get_fully_qualified_name(), 1.0);
 }
 
@@ -118,8 +113,7 @@ void IMUPlugin::init_imu_subcriber_()
 {
   auto callback = std::bind(&IMUPlugin::process_imu_, this, std::placeholders::_1);
 
-  imu_sub_ = node_->create_subscription<ImuMsg>(
-    "imu/data", best_effort(1), callback);
+  imu_sub_ = node_->create_subscription<ImuMsg>("imu/data", best_effort(1), callback);
 }
 
 //-----------------------------------------------------------------------------
@@ -127,10 +121,9 @@ void IMUPlugin::init_odometry_subscriber_()
 {
   auto callback = std::bind(&IMUPlugin::process_odom_, this, std::placeholders::_1);
 
-  odom_sub_ = node_->create_subscription<OdometryMsg>(
-    "vehicle_controller/odom", best_effort(1), callback);
+  odom_sub_ =
+    node_->create_subscription<OdometryMsg>("vehicle_controller/odom", best_effort(1), callback);
 }
-
 
 //-----------------------------------------------------------------------------
 void IMUPlugin::init_plugin_()
@@ -174,75 +167,63 @@ void IMUPlugin::init_timer_()
 void IMUPlugin::process_odom_(OdometryMsg::ConstSharedPtr msg)
 {
   // std::cout << " processOdom" << std::endl;
-  auto stamp = restamping_ ? node_->get_clock()->now() :
-    rclcpp::Time(msg->header.stamp.sec, msg->header.stamp.nanosec);
+  auto stamp = restamping_ ? node_->get_clock()->now()
+                           : rclcpp::Time(msg->header.stamp.sec, msg->header.stamp.nanosec);
 
   plugin_->process_linear_speed(
     to_romea_duration(stamp),
     std::sqrt(
-      msg->twist.twist.linear.x *
-      msg->twist.twist.linear.x +
-      msg->twist.twist.linear.y *
-      msg->twist.twist.linear.y));
+      msg->twist.twist.linear.x * msg->twist.twist.linear.x +
+      msg->twist.twist.linear.y * msg->twist.twist.linear.y));
 }
-
 
 //-----------------------------------------------------------------------------
 void IMUPlugin::process_imu_(ImuMsg::ConstSharedPtr msg)
 {
   // std::cout << " processIMU " << std::endl;
 
-  auto stamp = restamping_ ? node_->get_clock()->now() :
-    rclcpp::Time(msg->header.stamp.sec, msg->header.stamp.nanosec);
+  auto stamp = restamping_ ? node_->get_clock()->now()
+                           : rclcpp::Time(msg->header.stamp.sec, msg->header.stamp.nanosec);
 
   process_attitude_(stamp, *msg);
   process_angular_speed_(stamp, *msg);
 }
 
-
 //-----------------------------------------------------------------------------
-void IMUPlugin::process_angular_speed_(
-  const rclcpp::Time & stamp,
-  const ImuMsg & msg)
+void IMUPlugin::process_angular_speed_(const rclcpp::Time & stamp, const ImuMsg & msg)
 {
   if (plugin_->compute_angular_speed(
-      to_romea_duration(stamp),
-      enable_accelerations_ * msg.linear_acceleration.x,
-      enable_accelerations_ * msg.linear_acceleration.y,
-      enable_accelerations_ * msg.linear_acceleration.z,
-      msg.angular_velocity.x,
-      msg.angular_velocity.y,
-      msg.angular_velocity.z,
-      angular_speed_observation_))
-  {
+        to_romea_duration(stamp),
+        enable_accelerations_ * msg.linear_acceleration.x,
+        enable_accelerations_ * msg.linear_acceleration.y,
+        enable_accelerations_ * msg.linear_acceleration.z,
+        msg.angular_velocity.x,
+        msg.angular_velocity.y,
+        msg.angular_velocity.z,
+        angular_speed_observation_)) {
     publish_angular_speed_(stamp, msg.header.frame_id);
   }
 }
 
 //-----------------------------------------------------------------------------
-void IMUPlugin::process_attitude_(
-  const rclcpp::Time & stamp,
-  const ImuMsg & msg)
+void IMUPlugin::process_attitude_(const rclcpp::Time & stamp, const ImuMsg & msg)
 {
   Eigen::Quaterniond q;
   to_romea(msg.orientation, q);
   Eigen::Vector3d orientation = core::quaternionToEulerAngles(q);
 
   if (plugin_->compute_attitude(
-      to_romea_duration(stamp),
-      orientation.x(),
-      orientation.y(),
-      orientation.z(),
-      attitude_observation_))
-  {
+        to_romea_duration(stamp),
+        orientation.x(),
+        orientation.y(),
+        orientation.z(),
+        attitude_observation_)) {
     publish_attitude_(stamp, msg.header.frame_id);
   }
 }
 
 //-----------------------------------------------------------------------------
-void IMUPlugin::publish_angular_speed_(
-  const rclcpp::Time & stamp,
-  const std::string & frame_id)
+void IMUPlugin::publish_angular_speed_(const rclcpp::Time & stamp, const std::string & frame_id)
 {
   auto angular_speed_msg = std::make_unique<ObservationAngularSpeedStampedMsg>();
   to_ros_msg(stamp, frame_id, angular_speed_observation_, *angular_speed_msg);
@@ -250,9 +231,7 @@ void IMUPlugin::publish_angular_speed_(
 }
 
 //-----------------------------------------------------------------------------
-void IMUPlugin::publish_attitude_(
-  const rclcpp::Time & stamp,
-  const std::string & frame_id)
+void IMUPlugin::publish_attitude_(const rclcpp::Time & stamp, const std::string & frame_id)
 {
   auto attitude_msg = std::make_unique<ObservationAttitudeStampedMsg>();
   to_ros_msg(stamp, frame_id, attitude_observation_, *attitude_msg);

@@ -16,21 +16,21 @@
 #define ROMEA_LOCALISATION_IMU_PLUGIN__IMU_PLUGIN_HPP_
 
 // std
-#include <string>
 #include <memory>
+#include <string>
 
 // ros
+#include "nav_msgs/msg/odometry.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/imu.hpp"
-#include "nav_msgs/msg/odometry.hpp"
 
 // romea
-#include "romea_core_localisation_imu/imu_plugin.hpp"
 #include "romea_common_utils/conversions/diagnostic_conversions.hpp"
 #include "romea_common_utils/publishers/diagnostic_publisher.hpp"
+#include "romea_core_localisation_imu/imu_plugin.hpp"
+#include "romea_localisation_imu_plugin/visibility_control.h"
 #include "romea_localisation_utils/conversions/observation_angular_speed_conversions.hpp"
 #include "romea_localisation_utils/conversions/observation_attitude_conversions.hpp"
-#include "romea_localisation_imu_plugin/visibility_control.h"
 
 namespace romea
 {
@@ -39,14 +39,12 @@ namespace ros2
 namespace localisation
 {
 
-
 class IMUPlugin
 {
 public:
   using ImuMsg = sensor_msgs::msg::Imu;
   using OdometryMsg = nav_msgs::msg::Odometry;
-  using ObservationAttitudeStampedMsg =
-    romea_localisation_msgs::msg::ObservationAttitudeStamped;
+  using ObservationAttitudeStampedMsg = romea_localisation_msgs::msg::ObservationAttitudeStamped;
   using ObservationAngularSpeedStampedMsg =
     romea_localisation_msgs::msg::ObservationAngularSpeedStamped;
 
@@ -58,8 +56,7 @@ public:
   virtual ~IMUPlugin() = default;
 
   ROMEA_LOCALISATION_IMU_PLUGIN_PUBLIC
-  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
-  get_node_base_interface() const;
+  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() const;
 
 protected:
   void declare_parameters_();
@@ -79,7 +76,6 @@ protected:
   void init_debug_();
 
   void init_timer_();
-
 
   void process_imu_(ImuMsg::ConstSharedPtr msg);
 
