@@ -1,0 +1,27 @@
+---
+Language: Cpp
+BasedOnStyle: Google
+
+AccessModifierOffset: -2
+AlignAfterOpenBracket: AlwaysBreak
+AllowShortFunctionsOnASingleLine: InlineOnly
+BinPackArguments: false
+# BinPackParameters: OnePerLine # from clang version 20
+BinPackParameters: false
+BraceWrapping:
+  AfterClass: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+BreakBeforeBraces: Custom
+ColumnLimit: 100
+ConstructorInitializerIndentWidth: 0
+ContinuationIndentWidth: 2
+DerivePointerAlignment: false
+PointerAlignment: Middle
+QualifierAlignment: Left
+# ReflowComments: IndentOnly # from clang version 20
+ReflowComments: false
+SpaceAfterTemplateKeyword: false
+...
