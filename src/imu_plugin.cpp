@@ -20,6 +20,7 @@
 // romea
 #include "romea_common_utils/conversions/geometry_conversions.hpp"
 #include "romea_common_utils/conversions/time_conversions.hpp"
+#include "romea_common_utils/log/topic_logger.hpp"
 #include "romea_common_utils/params/algorithm_parameters.hpp"
 #include "romea_common_utils/params/eigen_parameters.hpp"
 #include "romea_common_utils/params/node_parameters.hpp"
@@ -152,7 +153,10 @@ void IMUPlugin::init_plugin_()
 void IMUPlugin::init_debug_()
 {
   if (get_debug(node_)) {
-    plugin_->enable_debug_log(get_log_filename(node_));
+    using Logger = TopicLogger<rclcpp::Node>;
+    plugin_->register_logger(
+      std::make_shared<Logger>(
+        node_, "~/debug", rclcpp::SystemDefaultsQoS(), Logger::Options(), true));
   }
 }
 
@@ -192,15 +196,16 @@ void IMUPlugin::process_imu_(ImuMsg::ConstSharedPtr msg)
 //-----------------------------------------------------------------------------
 void IMUPlugin::process_angular_speed_(const rclcpp::Time & stamp, const ImuMsg & msg)
 {
-  if (plugin_->compute_angular_speed(
-        to_romea_duration(stamp),
-        enable_accelerations_ * msg.linear_acceleration.x,
-        enable_accelerations_ * msg.linear_acceleration.y,
-        enable_accelerations_ * msg.linear_acceleration.z,
-        msg.angular_velocity.x,
-        msg.angular_velocity.y,
-        msg.angular_velocity.z,
-        angular_speed_observation_)) {
+  if (
+    plugin_->compute_angular_speed(
+      to_romea_duration(stamp),
+      enable_accelerations_ * msg.linear_acceleration.x,
+      enable_accelerations_ * msg.linear_acceleration.y,
+      enable_accelerations_ * msg.linear_acceleration.z,
+      msg.angular_velocity.x,
+      msg.angular_velocity.y,
+      msg.angular_velocity.z,
+      angular_speed_observation_)) {
     publish_angular_speed_(stamp, msg.header.frame_id);
   }
 }
@@ -212,12 +217,13 @@ void IMUPlugin::process_attitude_(const rclcpp::Time & stamp, const ImuMsg & msg
   to_romea(msg.orientation, q);
   Eigen::Vector3d orientation = core::quaternionToEulerAngles(q);
 
-  if (plugin_->compute_attitude(
-        to_romea_duration(stamp),
-        orientation.x(),
-        orientation.y(),
-        orientation.z(),
-        attitude_observation_)) {
+  if (
+    plugin_->compute_attitude(
+      to_romea_duration(stamp),
+      orientation.x(),
+      orientation.y(),
+      orientation.z(),
+      attitude_observation_)) {
     publish_attitude_(stamp, msg.header.frame_id);
   }
 }
