@@ -20,6 +20,7 @@
 // romea
 #include "romea_common_utils/conversions/geometry_conversions.hpp"
 #include "romea_common_utils/conversions/time_conversions.hpp"
+#include "romea_common_utils/log/topic_logger.hpp"
 #include "romea_common_utils/params/algorithm_parameters.hpp"
 #include "romea_common_utils/params/eigen_parameters.hpp"
 #include "romea_common_utils/params/node_parameters.hpp"
@@ -155,7 +156,10 @@ void IMUPlugin::init_plugin_()
 void IMUPlugin::init_debug_()
 {
   if (get_debug(node_)) {
-    plugin_->enable_debug_log(get_log_filename(node_));
+    using Logger = TopicLogger<rclcpp::Node>;
+    plugin_->register_logger(
+      std::make_shared<Logger>(
+        node_, "~/debug", rclcpp::SystemDefaultsQoS(), Logger::Options(), true));
   }
 }
 
@@ -199,7 +203,6 @@ void IMUPlugin::process_imu_(ImuMsg::ConstSharedPtr msg)
 //-----------------------------------------------------------------------------
 void IMUPlugin::process_angular_speed_(const rclcpp::Time & stamp, const ImuMsg & msg)
 {
-  // std::cout << " process_angular_speed_ 1" << std::endl;
   if (
     plugin_->compute_angular_speed(
       to_romea_duration(stamp),
@@ -210,7 +213,6 @@ void IMUPlugin::process_angular_speed_(const rclcpp::Time & stamp, const ImuMsg 
       msg.angular_velocity.y,
       msg.angular_velocity.z,
       angular_speed_observation_)) {
-    // std::cout << " process_angular_speed_ 2" << std::endl;
     publish_angular_speed_(stamp, msg.header.frame_id);
   }
 }
