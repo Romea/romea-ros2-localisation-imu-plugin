@@ -23,7 +23,7 @@ namespace
 
 const char restamping_param_name[] = "restamping";
 const char enable_accelerations_param_name[] = "enable_accelerations";
-const char disable_angular_speed_bias_computation_param_name[] = 
+const char disable_angular_speed_bias_computation_param_name[] =
   "disable_angular_speed_bias_computation_param_name";
 
 const char rate_param_name[] = "imu.rate";
@@ -80,7 +80,7 @@ bool get_enable_accelerations(rclcpp::Node::SharedPtr node)
 //-----------------------------------------------------------------------------
 bool get_disable_angular_speed_bias_computation(rclcpp::Node::SharedPtr node)
 {
- return get_parameter<bool>(node, disable_angular_speed_bias_computation_param_name);
+  return get_parameter<bool>(node, disable_angular_speed_bias_computation_param_name);
 }
 
 //-----------------------------------------------------------------------------

@@ -15,6 +15,7 @@
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
   <depend>romea_core_common</depend>
+  <depend>romea_core_imu</depend>
   <depend>romea_core_localisation</depend>
   <depend>romea_core_localisation_imu</depend>
   <depend>romea_common_utils</depend>
@@ -22,6 +23,13 @@
   <depend>romea_localisation_utils</depend>
   <depend>sensor_msgs</depend>
   <depend>nav_msgs</depend>
+
+  <build_depend>eigen</build_depend>
+  <build_export_depend>eigen</build_export_depend>
+
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

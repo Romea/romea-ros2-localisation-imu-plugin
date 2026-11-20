@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project(romea_localisation_imu_plugin)
 
 # Default to C99
@@ -41,17 +41,17 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_compile_definitions(${PROJECT_NAME}
   PRIVATE "ROMEA_LOCALISATION_IMU_BUILDING_DLL")
 
-ament_target_dependencies(${PROJECT_NAME}
-  rclcpp
-  rclcpp_components
-  romea_core_common
-  romea_core_localisation
-  romea_core_localisation_imu
-  romea_common_utils
-  romea_localisation_msgs
-  romea_localisation_utils
-  sensor_msgs
-  nav_msgs)
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  rclcpp::rclcpp
+  rclcpp_components::component
+  romea_core_common::romea_core_common
+  romea_core_localisation::romea_core_localisation
+  romea_core_localisation_imu::romea_core_localisation_imu
+  romea_common_utils::romea_common_utils
+  ${romea_localisation_msgs_TARGETS}
+  romea_localisation_utils::romea_localisation_utils
+  ${sensor_msgs_TARGETS}
+  ${nav_msgs_TARGETS})
 
 rclcpp_components_register_node(${PROJECT_NAME}
   PLUGIN "romea::ros2::localisation::IMUPlugin"
@@ -67,7 +67,6 @@ install(TARGETS
 
 #add_executable(${PROJECT_NAME}_node src/imu_localisation_plugin_node.cpp)
 #target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME})
-#ament_target_dependencies(${PROJECT_NAME} rclcpp)
 
 #install(TARGETS
 # ${PROJECT_NAME}_node
